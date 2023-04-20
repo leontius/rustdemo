@@ -28,6 +28,20 @@ fn x_equal_y() {
     let x: i32 = 2;
     let y: i32 = 2;
     println!("x v:{} is equal to y v:{}", x, y);
+
+    let (x, y) = (1, 2);
+    // x += 2;
+
+    assert_eq!(x, 1);
+    assert_eq!(y, 2);
+}
+
+fn x_equal_y2() {
+    let (x, y);
+    (x, ..) = (3, 4);
+    [.., y] = [1, 2];
+    // 填空，让代码工作
+    assert_eq!([x, y], [3, 2]);
 }
 
 fn self_increment(y: &i32) -> &i32 {
@@ -38,19 +52,21 @@ fn self_increment(y: &i32) -> &i32 {
     return &y;
 }
 
-fn define_x() -> String {
-    let x = String::from("hello");
-    return x;
+fn define_x() -> &'static str {
+    let x = "hello";
+    x
 }
 
 fn plus() {
     let mut x: i32 = 1;
+    println!("{}", x);
     x = 7;
     // 遮蔽且再次绑定
     let x = x;
     // x += 3;
 
     let y = 4;
+    println!("x = {}, y = {}", x, y);
     // 遮蔽
     let y = "I can also be bound to text!";
     println!("x = {}, y = {}", x, y)
@@ -60,6 +76,7 @@ fn main() {
     greet_world();
     shadowing();
     x_equal_y();
+    x_equal_y2();
     plus();
     println!("self increment = {}", self_increment(&10));
 
