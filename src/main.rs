@@ -1,4 +1,7 @@
 use num::complex::Complex;
+use std::fmt::Debug;
+use std::mem;
+use std::mem::size_of_val;
 use std::ops::{Range, RangeInclusive};
 use std::{thread, time};
 
@@ -284,11 +287,167 @@ fn practice() {
     println!("0011 XOR 0101 is {:04b}", 0b0011u32 ^ 0b0101);
     println!("1 << 5 is {}", 1u32 << 5);
     println!("0x80 >> 2 is 0x{:x}", 0x80u32 >> 2);
+
+    let c1 = 'a';
+    assert_eq!(size_of_val(&c1), 4);
+    let c2 = '中';
+    assert_eq!(size_of_val(&c2), 4);
+
+    print_char(c1);
+
+    let _f: bool = false;
+
+    let t = true;
+    if t {
+        println!("Success!")
+    }
+
+    let f = true;
+    let t = true || false;
+    assert_eq!(t, f);
+
+    let _v: () = ();
+    let v = (2, 3);
+    assert_eq!(v, (2, 3));
+
+    let unit: () = ();
+    assert!(size_of_val(&unit) == 0);
+
+    // 调用一个函数是表达式，因为会返回一个值，调用宏也是表达式，用花括号包裹最终返回一个值的语句块也是表达式，总之，能返回值
+    let y = {
+        let x = 3;
+        // 该语句块是表达式的原因是：它的最后一行是表达式，返回了 x + 1 的值，注意 x + 1 不能以分号结尾，否则就会从表达式变成语句， 表达式不能包含分号。
+        x + 1
+    };
+    println!("The value of y is:{}", y);
+
+    // 表达式如果不返回任何值，会隐式地返回一个 ()
+    assert_eq!(ret_unit_type(), ());
+}
+
+fn ret_unit_type() {
+    let x = 1;
+    // if 语句块也是一个表达式，因此可以用于赋值，也可以直接返回
+    // 类似三元运算符，在Rust里我们可以这样写
+    let _y = if x % 2 == 1 { "odd" } else { "even" };
+    // 或者写成一行
+    let _z = if x % 2 == 1 { "odd" } else { "even" };
+}
+
+fn print_char(c: char) {
+    println!("{}", c);
 }
 
 // 以下函数可以获取传入参数的类型，并返回类型的字符串形式，例如  "i8", "u8", "i32", "u32"
 fn type_of<T>(_: &T) -> String {
     format!("{}", std::any::type_name::<T>())
+}
+
+fn operation_char() {
+    let c = 'Z';
+    let z = 'z';
+    let g = 'G';
+    let x = '中';
+    let heart_eyed_cat = '😻';
+
+    println!("{} {} {} {}", c, z, g, heart_eyed_cat);
+    println!("字符'中'占用了{}字节内存大小", mem::size_of_val(&x));
+}
+
+fn operation_bool() {
+    let t = true;
+    let f = false;
+    if f || t {
+        println!("这是段毫无意义的代码.");
+    }
+}
+
+fn add_with_extra(x: i32, y: i32) -> i32 {
+    let x = x + 1; // 语句
+    let y = y + 5; // 语句
+    x + y // 表达式
+}
+
+fn plus_or_minus(x: i32) -> i32 {
+    if x > 5 {
+        return x - 5;
+    }
+    // x + 5 没有分号，因为它是一条表达式，这个在上一节中我们也有详细介绍
+    x + 5
+}
+
+/// 下面的 report 函数会隐式返回一个 ()
+fn report<T: Debug>(item: T) {
+    println!("{:?}", item);
+}
+
+/// 下面的函数显式的返回了 ()
+fn clear(text: &mut String) -> () {
+    *text = String::from("");
+}
+
+fn _add(x: u32, y: u32) -> u32 {
+    // 只有没有分号的表达式能反回值,加了分号的都是语句.
+    // x + y;
+    x + y
+}
+
+/// 当用 ! 作函数返回类型的时候，表示该函数永不返回( diverge function )，特别的，这种语法往往用做会导致程序崩溃的函数
+fn _dead_end() -> ! {
+    panic!("你已经到了穷途末路, 崩溃吧!");
+}
+
+fn _forever() {
+    let mut a = 1;
+    loop {
+        a += 1;
+
+        if a > 10 {
+            break;
+        }
+    }
+}
+
+// for遍历
+fn _foreach() {
+    let x = [0, 1, 2, 3, 4, 5];
+    for i in x.iter() {
+        println!("{}", i);
+    }
+}
+
+fn takes_ownership(some_string: String) {
+    // some_string 进入作用域
+    println!("{}", some_string);
+} // 这里，some_string 移出作用域并调用 `drop` 方法。占用的内存被释放
+
+fn makes_copy(some_integer: i32) {
+    // some_integer 进入作用域
+    println!("{}", some_integer);
+} // 这里，some_integer 移出作用域。不会有特殊操作
+
+fn test_clone() {
+    let s = String::from("hello"); // s 进入作用域
+
+    takes_ownership(s); // s 的值移动到函数里 ...
+                        // ... 所以到这里不再有效
+
+    let x = 5; // x 进入作用域
+
+    makes_copy(x); // x 应该移动函数里，
+                   // 但 i32 是 Copy 的，所以在后面可继续使用 x
+    println!("{}", x);
+} // 这里, x 先移出了作用域，然后是 s。但因为 s 的值已被移走，
+  // 所以不会有特殊操作
+
+fn borrowing() {
+    let x = 5;
+    // 引用x
+    let y = &x;
+
+    assert_eq!(5, x);
+    // 解引用y
+    assert_eq!(5, *y);
 }
 
 fn main() {
@@ -307,6 +466,36 @@ fn main() {
     operation_range();
     rational_number();
     practice();
+    operation_char();
+    operation_bool();
+    report("item");
+    test_clone();
+    borrowing();
+
+    // 使用尽可能多的方法来通过编译
+    let x = &String::from("hello");
+    let y = x;
+    println!("{},{}", x, y);
+
+    let x = "hello";
+    let y = x;
+    println!("{},{}", x, y);
+
+    let x = String::from("hello");
+    let y = x.clone();
+    println!("{},{}", x, y);
+
+    let x = String::from("hello");
+    let y = x.as_str();
+    println!("{},{}", x, y);
+
+    let mut x = String::from("test");
+    clear(&mut x);
+
+    println!("{}", add_with_extra(1, 2));
+
+    let x = plus_or_minus(6);
+    println!("The value of x is: {}", x);
 
     let x: u32 = 5;
     assert_eq!("u32".to_string(), type_of(&x));
