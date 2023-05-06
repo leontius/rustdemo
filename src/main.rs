@@ -450,6 +450,146 @@ fn borrowing() {
     assert_eq!(5, *y);
 }
 
+fn push_insert_replace_str() {
+    let mut s = String::from("Hello ");
+
+    s.push_str("rust");
+    println!("追加字符串 push_str() -> {}", s);
+
+    s.push('你');
+    s.push('好');
+    s.push('!');
+    println!("追加字符 push() -> {}", s);
+
+    // 指定位置插入
+    s.insert(5, '🦀');
+    s.insert_str(10, "插入*");
+    println!("{}", s);
+
+    // 替换
+    let string_replace = String::from("I like rust. Learning rust is my favorite!");
+    let new_string_replace = string_replace.replace("rust", "RUST");
+    println!("{}", new_string_replace);
+    dbg!(new_string_replace);
+
+    // 替换指定数量
+    let string_replace = "I like rust. Learning rust is my favorite!";
+    let new_string_replacen = string_replace.replacen("rust", "RUST", 1);
+    dbg!(new_string_replacen);
+
+    // 替换范围
+    let mut string_replace_range = String::from("I like rust!");
+    string_replace_range.replace_range(7..8, "R");
+    dbg!(string_replace_range);
+
+    // 删除并反回最后一个字符
+    let mut string_pop = String::from("rust pop 中文!");
+    let p1 = string_pop.pop();
+    let p2 = string_pop.pop();
+    dbg!(p1);
+    dbg!(p2);
+    dbg!(string_pop);
+
+    // 删除并返回指定位置字符
+    let mut string_remove = String::from("测试remove方法");
+    println!(
+        "string_remove 占 {} 个字符",
+        mem::size_of_val(string_remove.as_str())
+    );
+    // 删除第一个字符
+    string_remove.remove(0);
+    // 下面代码会发生错误
+    // string_remove.remove(1);
+    // 直接删除第二个汉字
+    string_remove.remove(3);
+    dbg!(string_remove);
+
+    // 清空字符串
+    let mut string_clear = String::from("string clear");
+    string_clear.clear();
+    dbg!(string_clear);
+
+    // 连接
+    let string_append = String::from("hello ");
+    let string_rust = String::from("rust");
+    // &string_rust会自动解引用为&str
+    let result = string_append + &string_rust;
+    let mut result = result + "!";
+    result += "!!!";
+
+    println!("连接字符串 + -> {}", result);
+
+    let s1 = String::from("hello,");
+    let s2 = String::from("world!");
+    // 在下句中，s1的所有权被转移走了，因此后面不能再使用s1
+    let s3 = s1 + &s2;
+    assert_eq!(s3, "hello,world!");
+    // 下面的语句如果去掉注释，就会报错
+    // println!("{}",s1);
+
+    // 同理 + 号连接字符串, s1变量所有权转移到了add()方法里面
+    let s1 = String::from("tic");
+    let s2 = String::from("tac");
+    let s3 = String::from("toe");
+
+    // String = String + &str + &str + &str + &str
+    let s = s1 + "-" + &s2 + "-" + &s3;
+    dbg!(s);
+
+    let s1 = "hello";
+    let s2 = String::from("rust");
+    let s = format!("{} {}!", s1, s2);
+    dbg!(s);
+
+    // 通过 \ + 字符的十六进制表示，转义输出一个字符
+    let byte_escape = "I'm writing \x52\x75\x73\x74!";
+    println!("What are you doing\x3F (\\x3F means ?) {}", byte_escape);
+
+    // \u 可以输出一个 unicode 字符
+    let unicode_codepoint = "\u{211D}";
+    let character_name = "\"DOUBLE-STRUCK CAPITAL R\"";
+
+    println!(
+        "Unicode character {} (U+211D) is called {}",
+        unicode_codepoint, character_name
+    );
+
+    // 换行了也会保持之前的字符串格式
+    let long_string = "String literals
+                            can span multiple lines.
+                            The linebreak and indentation here ->\
+                            <- can be escaped too!";
+    println!("{}", long_string);
+
+    // 当然，在某些情况下，可能你会希望保持字符串的原样，不要转义
+    println!("{}", "hello \\x52\\x75\\x73\\x74");
+    let raw_str = r"Escapes don't work here: \x3F \u{211D}";
+    println!("{}", raw_str);
+
+    // 如果字符串包含双引号，可以在开头和结尾加 #
+    let quotes = r#"And then I said: "There is no escape!""#;
+    println!("{}", quotes);
+
+    // 如果还是有歧义，可以继续增加，没有限制
+    let longer_delimiter = r###"A string with "# in it. And even "##!"###;
+    println!("{}", longer_delimiter);
+
+    for c in "中国人".chars() {
+        println!("{}", c);
+    }
+
+    for b in "中国人".as_bytes() {
+        dbg!(b);
+    }
+
+    // 想要准确的从 UTF-8 字符串中获取子串是较为复杂的事情, 可以考虑utf8_slice库
+    let c = utf8_slice::from("中国人", 1);
+    dbg!(c);
+
+    let c = utf8_slice::slice("中国人", 0, 1);
+    dbg!(c);
+}
+
 fn main() {
     greet_world();
     shadowing();
@@ -471,6 +611,7 @@ fn main() {
     report("item");
     test_clone();
     borrowing();
+    push_insert_replace_str();
 
     // 使用尽可能多的方法来通过编译
     let x = &String::from("hello");
