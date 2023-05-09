@@ -17,4 +17,6 @@ members = [
     "moduledemo",
     "usedemo",
     "collectionsdemo",
+    "stringdemo",
+    "hashmapdemo",
 ]
