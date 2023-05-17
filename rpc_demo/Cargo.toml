@@ -1,0 +1,22 @@
+[package]
+name = "rpc_demo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
+[dependencies]
+tonic = "0.9.2"
+prost = "0.11.9"
+tokio = { version = "1.28.1", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+tonic-build = "0.9.2"

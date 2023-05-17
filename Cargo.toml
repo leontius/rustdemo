@@ -19,4 +19,7 @@ members = [
     "collectionsdemo",
     "stringdemo",
     "hashmapdemo",
+    "panicdemo",
+    "resultdemo",
+    "rpc_demo",
 ]
