@@ -1,5 +1,3 @@
-use std::net::SocketAddr;
-
 use records::recorder_server::{Recorder, RecorderServer};
 use records::{RecordRequest, RecordResponse};
 use tonic::transport::Server;
@@ -31,7 +29,7 @@ impl Recorder for RecorderService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr: SocketAddr = "[::1]:50051".parse()?;
+    let addr = "[::1]:50051".parse()?;
     let recorder = RecorderService::default();
     println!("Recorder listening on {}", addr);
     Server::builder()
