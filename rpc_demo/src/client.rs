@@ -1,5 +1,5 @@
 use records::recorder_client::RecorderClient;
-use records::RecordRequest;
+use records::{RecordRequest, SendStreamReq};
 use tonic::Request;
 
 pub mod records {
@@ -18,6 +18,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:#?}", responce);
     println!("Meta：{:#?}", &responce.metadata());
     println!("Meta：{:#?}", &responce.get_ref());
+
+    let send_stream_req = Request::new(SendStreamReq {
+        user_name: "test".to_string(),
+        user_age: 10,
+    });
+    let mut stream = client.send_stream(send_stream_req).await?.into_inner();
+
+    while let Some(res) = stream.message().await? {
+        println!("{:#?}", res);
+    }
 
     Ok(())
 }

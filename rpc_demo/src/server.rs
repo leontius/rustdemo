@@ -1,8 +1,9 @@
 use records::recorder_server::{Recorder, RecorderServer};
-use records::{RecordRequest, RecordResponse};
+use records::{RecordRequest, RecordResponse, SendStreamReq, SendStreamRes};
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
 use tonic::transport::Server;
-use tonic::Status;
-use tonic::{Request, Response};
+use tonic::{Request, Response, Status};
 
 pub mod records {
     tonic::include_proto!("records");
@@ -24,6 +25,29 @@ impl Recorder for RecorderService {
             message: format!("User {} is {} old!", req.user_name, req.user_age),
         };
         Ok(Response::new(res))
+    }
+
+    type SendStreamStream = ReceiverStream<Result<SendStreamRes, Status>>;
+
+    async fn send_stream(
+        &self,
+        request: Request<SendStreamReq>,
+    ) -> Result<Response<Self::SendStreamStream>, Status> {
+        println!("request: {:#?}", request);
+        let (tx, rx) = mpsc::channel(10);
+
+        tokio::spawn(async move {
+            for i in 0..10 {
+                tx.send(Ok(SendStreamRes {
+                    success: true,
+                    message: format!("Message {}", i),
+                }))
+                .await
+                .unwrap();
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 }
 
