@@ -22,4 +22,6 @@ members = [
     "panicdemo",
     "resultdemo",
     "rpc_demo",
+    "generic_demo",
+    "trait_demo",
 ]
