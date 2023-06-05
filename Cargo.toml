@@ -24,4 +24,6 @@ members = [
     "rpc_demo",
     "generic_demo",
     "trait_demo",
+    "thread_demo",
+    "life_cycle",
 ]
