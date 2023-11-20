@@ -1,5 +1,5 @@
 [package]
-name = "hashmapdemo"
+name = "use_dyn"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,5 +1,5 @@
 [package]
-name = "matchdemo"
+name = "mem_take_replace"
 version = "0.1.0"
 edition = "2021"
 

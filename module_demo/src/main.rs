@@ -1,4 +1,4 @@
-use moduledemo::{eat_at_restaurant, front_of_house::serving};
+use module_demo::{eat_at_restaurant, front_of_house::serving};
 
 fn main() {
     println!("Hello, world!");
